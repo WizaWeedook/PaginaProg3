@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adev24</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        nav {
+            background-color: #2d2d2d;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: #00ff88;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #00ff88, #00bfff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .games-section {
+            padding: 4rem 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .game-card {
+            background-color: #2d2d2d;
+            border-radius: 30px;
+            overflow: hidden;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .game-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .game-info {
+            padding: 1.5rem;
+        }
+
+        .game-info h2 {
+            color: #00ff88;
+            margin-bottom: 1rem;
+        }
+
+        .game-info p {
+            color: #cccccc;
+            line-height: 1.6;
+        }
+
+        footer {
+            background-color: #2d2d2d;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        footer p {
+            color: #cccccc;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a class="hero" color ="#00ff88"> Adev24 </a>
+        <ul class="nav-menu">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="videojuegos.html">Videojuegos</a></li>
+            <li><a href="recomendaciones.html">Recomendaciones</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <h1>Adev24</h1>
+        <p>Empresa de desarrollo de videojuegos</p>
+    </section>
+
+    <section class="games-section">
+        <div class="game-card">
+            <img src="img/juego2.jpg" alt="Juego Actividad 2">
+            <div class="game-info">
+                <h2>Juego Actividad 2</h2>
+                <p>Un emocionante juego de aventura que te transportará a mundos mágicos.</p>
+            </div>
+        </div>
+
+        <div class="game-card">
+            <img src="img/juego3.jpg" alt="Juego Actividad 3">
+            <div class="game-info">
+                <h2>Juego Actividad 3</h2>
+                <p>Desafía tus habilidades en este juego de estrategia y acción.</p>
+            </div>
+        </div>
+
+        <div class="game-card">
+            <img src="img/juego4.jpg" alt="Juego Actividad 4">
+            <div class="game-info">
+                <h2>Juego Actividad 4</h2>
+                <p>Sumérgete en una experiencia única de supervivencia y exploración.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2024 Adev24 - Campus UCP, Corrientes Capital</p>
+    </footer>
+</body>
+</html> 

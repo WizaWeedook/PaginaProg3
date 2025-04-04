@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Videojuegos - Adev24</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        nav {
+            background-color: #2d2d2d;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: #00ff88;
+        }
+
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #00ff88;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .game-details {
+            background-color: #2d2d2d;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .game-details img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .game-details h2 {
+            color: #00ff88;
+            margin-bottom: 1rem;
+        }
+
+        .game-details p {
+            color: #cccccc;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        footer {
+            background-color: #2d2d2d;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        footer p {
+            color: #cccccc;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a class="hero" color ="#00ff88"> Adev24 </a>
+        <ul class="nav-menu">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="videojuegos.html">Videojuegos</a></li>
+            <li><a href="recomendaciones.html">Recomendaciones</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        <h1>Nuestros Videojuegos</h1>
+
+        <div class="game-details">
+            <img src="img/juego2.jpg" alt="Juego Actividad 2">
+            <h2>Juego Actividad 2</h2>
+            <p>Un emocionante juego de aventura que te transportará a mundos mágicos. Explora paisajes asombrosos, resuelve enigmas y descubre secretos ocultos en esta experiencia única.</p>
+        </div>
+
+        <div class="game-details">
+            <img src="img/juego3.jpg" alt="Juego Actividad 3">
+            <h2>Juego Actividad 3</h2>
+            <p>Desafía tus habilidades en este juego de estrategia y acción. Planifica tus movimientos, gestiona recursos y supera obstáculos en tu camino hacia la victoria.</p>
+        </div>
+
+        <div class="game-details">
+            <img src="img/juego4.jpg" alt="Juego Actividad 4">
+            <h2>Juego Actividad 4</h2>
+            <p>Sumérgete en una experiencia única de supervivencia y exploración. Enfrenta desafíos ambientales, construye refugios y lucha por tu supervivencia en un mundo hostil.</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2024 Adev24 - Campus UCP, Corrientes Capital</p>
+    </footer>
+</body>
+</html>
