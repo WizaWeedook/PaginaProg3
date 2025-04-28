@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="logica.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <title>Piedra, Papel y Tijeras</title>
+    <title>Mago, Dragon y Caballero</title>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -13,14 +13,19 @@
             margin: 0;
             padding: 20px;
             text-align: center;
+            background-image: url('img/Mago, Caballero y Dragon.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
         }
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background-color: white;
+            background-color: rgb(221, 203, 174);
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(248, 246, 246, 0.1);
         }
         .opciones {
             display: flex;
@@ -45,10 +50,10 @@
             margin-top: 20px;
             font-size: 1.5em;
             font-weight: bold;
-            color: #2c3e50;
+            color: rgb(0, 0, 0);
         }
         h1 {
-            color: #2c3e50;
+            color: #4074a8;
             margin: 10px 0;
         }
         img {
@@ -57,15 +62,32 @@
             object-fit: cover;
             border-radius: 10px;
         }
+        #reiniciar {
+            display: none;
+            margin: 30px auto 0 auto;
+            padding: 12px 32px;
+            font-size: 1.2em;
+            background-color: rgb(130, 123, 107);
+            color: #000000;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: background 0.3s;
+            display: block;
+        }
+        #reiniciar:hover {
+            background-color: #85695a;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Piedra, Papel y Tijeras</h1>
+        <h1>Mago, Caballero y Dragon</h1>
         <div class="opciones">
-            <img src="img/1.jpg" class="opcion" onclick="jugar(0);">
-            <img src="img/2.png" class="opcion" onclick="jugar(1);">
-            <img src="img/3.png" class="opcion" onclick="jugar(2);">
+            <img src="img/mago.png" class="opcion" onclick="jugar(0);">
+            <img src="img/guerrero.png" class="opcion" onclick="jugar(1);">
+            <img src="img/dragon.png" class="opcion" onclick="jugar(2);">
         </div>
         
         <div class="resultados">
@@ -82,7 +104,12 @@
         <div class="resultado-final">
             <h2>Resultado:</h2>
             <h2 id="resultado"></h2>
+            <div id="ronda">Ronda: 1 / 5</div>
+            <div id="estadoRonda"></div>
+            <div id="marcador">Jugador: 0 - Enemigo: 0</div>
+            <div>Tu jugada: <span id="jugador"></span></div>
+            <div>Jugada enemigo: <span id="enemigo"></span></div>
+            <button id="reiniciar" onclick="reiniciarJuego()" style="display:none;">Reiniciar partida</button>
         </div>
-    </div>
 </body>
 </html>
