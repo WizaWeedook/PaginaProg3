@@ -3,6 +3,9 @@ let cards = [];
 let selectedCards = [];
 let valuesUsed = [];
 let currentMove = 0;
+let currentAttemps = 0;
+let timeLeft = 60; // Tiempo límite en segundos
+let timerInterval;
 
 const cardTemplate = `
   <div class="card">
@@ -14,6 +17,7 @@ const cardTemplate = `
 function activate(e) {
   const card = e.currentTarget;
 
+  // Evitar que se seleccionen más de dos cartas o que se seleccione la misma carta dos veces
   if (currentMove < 2 && !card.classList.contains('active')) {
     card.classList.add('active');
     selectedCards.push(card);
@@ -23,17 +27,18 @@ function activate(e) {
       const value2 = selectedCards[1].querySelector('.face').innerHTML;
 
       if (value1 === value2) {
-        // Match found
+        // Si las cartas coinciden, reinicia el movimiento
         selectedCards = [];
         currentMove = 0;
+        checkVictory(); // Verificar si el jugador ha ganado
       } else {
-        // No match, flip back after a delay
+        // Si no coinciden, espera un momento y quita la clase 'active'
         setTimeout(() => {
           selectedCards[0].classList.remove('active');
           selectedCards[1].classList.remove('active');
           selectedCards = [];
           currentMove = 0;
-        }, 600);
+        }, 1000); // Espera 1 segundo antes de voltear las cartas
       }
     }
   }
@@ -47,6 +52,51 @@ function randomValue() {
 
   valuesUsed.push(rnd);
   return rnd;
+}
+
+function startTimer() {
+  const timerElement = document.createElement('div');
+  timerElement.id = 'timer';
+  timerElement.style.color = 'white';
+  timerElement.style.fontSize = '2rem';
+  timerElement.style.position = 'absolute';
+  timerElement.style.top = '10px';
+  timerElement.style.right = '10px';
+  document.body.appendChild(timerElement);
+
+  timerInterval = setInterval(() => {
+    timerElement.innerHTML = `Tiempo restante: ${timeLeft}s`;
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      defeat(); // Llamar a la función de derrota
+    }
+    timeLeft--;
+  }, 1000);
+}
+
+function defeat() {
+  alert('¡Tiempo agotado! Has perdido.');
+  resetGame(); // Reinicia el juego
+}
+
+function checkVictory() {
+  if (document.querySelectorAll('.card:not(.active)').length === 0) {
+    clearInterval(timerInterval);
+    alert('¡Felicidades! Has ganado.');
+    resetGame(); // Reinicia el juego
+  }
+}
+
+function resetGame() {
+  document.querySelector('#game').innerHTML = '';
+  cards = [];
+  selectedCards = [];
+  valuesUsed = [];
+  currentMove = 0;
+  timeLeft = 60;
+  clearInterval(timerInterval);
+  initializeGame();
+  startTimer();
 }
 
 function initializeGame() {
@@ -64,6 +114,8 @@ function initializeGame() {
     cards.push(card);
     gameContainer.appendChild(card);
   }
+
+  startTimer(); // Iniciar el temporizador
 }
 
 // Initialize the game when the DOM is fully loaded
