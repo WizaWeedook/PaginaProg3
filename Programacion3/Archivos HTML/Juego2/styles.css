@@ -18,10 +18,11 @@ Body{
 #game{
     height: 100vh;
     max-height: 700px;
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     align-items: center;
     justify-content: center;
+    padding: 1rem;
 }
 
 #stats{
