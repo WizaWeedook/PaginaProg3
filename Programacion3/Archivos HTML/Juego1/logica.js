@@ -50,6 +50,7 @@ function jugar(obj){
             document.getElementById("resultado").innerHTML = "¡Perdiste la partida!";
         }
         document.getElementById("reiniciar").style.display = "block";
+        document.getElementById("menu-btn").style.display = "inline-block";
         return;
     }
 
@@ -67,6 +68,7 @@ function jugar(obj){
             document.getElementById("resultado").innerHTML = "¡Empate en la partida!";
         }
         document.getElementById("reiniciar").style.display = "block";
+        document.getElementById("menu-btn").style.display = "inline-block";
     }
 }
 

@@ -62,7 +62,7 @@
             object-fit: cover;
             border-radius: 10px;
         }
-        #reiniciar {
+        .resultado-final button  {
             display: none;
             margin: 30px auto 0 auto;
             padding: 12px 32px;
@@ -76,7 +76,7 @@
             transition: background 0.3s;
             display: block;
         }
-        #reiniciar:hover {
+        .resultado-final button:hover {
             background-color: #85695a;
         }
     </style>
@@ -110,6 +110,8 @@
             <div>Tu jugada: <span id="jugador"></span></div>
             <div>Jugada enemigo: <span id="enemigo"></span></div>
             <button id="reiniciar" onclick="reiniciarJuego()" style="display:none;">Reiniciar partida</button>
+            <button id="menu-btn" onclick="window.location.href='../index.html'" style="display:none; margin-left:10px;">Volver al menú</button>
         </div>
+    </div>
 </body>
 </html>

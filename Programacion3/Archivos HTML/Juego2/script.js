@@ -55,6 +55,12 @@ function randomValue() {
 }
 
 function startTimer() {
+  // Elimina el timer anterior si existe
+  const oldTimer = document.getElementById('timer');
+  if (oldTimer) {
+    oldTimer.remove();
+  }
+
   const timerElement = document.createElement('div');
   timerElement.id = 'timer';
   timerElement.style.color = 'white';
@@ -74,16 +80,28 @@ function startTimer() {
   }, 1000);
 }
 
+function showModal(message) {
+  const modal = document.getElementById('modal-message');
+  const modalText = document.getElementById('modal-text');
+  modalText.textContent = message;
+  modal.style.display = 'flex';
+  document.getElementById('modal-btn').onclick = () => {
+    modal.style.display = 'none';
+    resetGame();
+  };
+  document.getElementById('menu-btn').onclick = () => {
+    window.location.href = '../index.html';
+  };
+}
+
 function defeat() {
-  alert('¡Tiempo agotado! Has perdido.');
-  resetGame(); // Reinicia el juego
+  showModal('¡Tiempo agotado! Has perdido.');
 }
 
 function checkVictory() {
   if (document.querySelectorAll('.card:not(.active)').length === 0) {
     clearInterval(timerInterval);
-    alert('¡Felicidades! Has ganado.');
-    resetGame(); // Reinicia el juego
+    showModal('¡Felicidades! Has ganado.');
   }
 }
 
