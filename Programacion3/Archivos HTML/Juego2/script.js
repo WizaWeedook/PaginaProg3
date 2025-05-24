@@ -3,7 +3,6 @@ let cards = [];
 let selectedCards = [];
 let valuesUsed = [];
 let currentMove = 0;
-let currentAttemps = 0;
 let timeLeft = 60; // Tiempo límite en segundos
 let timerInterval;
 
@@ -14,6 +13,16 @@ const cardTemplate = `
   </div>
 `;
 
+
+const cardImages = [
+  'img/Planeta 1.PNG',
+  'img/Planeta 2.PNG',
+  'img/Planeta 3.PNG',
+  'img/Planeta 4.PNG',
+  'img/Planeta 5.PNG',
+  'img/Planeta 6.PNG'
+];
+
 function activate(e) {
   const card = e.currentTarget;
 
@@ -23,8 +32,8 @@ function activate(e) {
     selectedCards.push(card);
 
     if (++currentMove === 2) {
-      const value1 = selectedCards[0].querySelector('.face').innerHTML;
-      const value2 = selectedCards[1].querySelector('.face').innerHTML;
+      let currentAttemps = 0;      const value1 = selectedCards[0].getAttribute('data-value');
+      const value2 = selectedCards[1].getAttribute('data-value');
 
       if (value1 === value2) {
         // Si las cartas coinciden, reinicia el movimiento
@@ -114,9 +123,18 @@ function resetGame() {
   timeLeft = 60;
   clearInterval(timerInterval);
   initializeGame();
-  startTimer();
 }
-
+function resetGame() {
+  document.querySelector('#game').innerHTML = '';
+  cards = [];
+  selectedCards = [];
+  valuesUsed = [];
+  currentMove = 0;
+  timeLeft = 60;
+  clearInterval(timerInterval);
+  initializeGame();
+  // startTimer();  // <-- Esta línea sobra
+}
 function initializeGame() {
   const gameContainer = document.querySelector('#game');
 
@@ -126,7 +144,8 @@ function initializeGame() {
     const card = div.firstElementChild;
 
     const value = randomValue();
-    card.querySelector('.face').innerHTML = value;
+    card.querySelector('.face').innerHTML = `<img src="${cardImages[value]}" style="width:90px; height:90px; border-radius:10px;">`;
+    card.setAttribute('data-value', value);
 
     card.addEventListener('click', activate);
     cards.push(card);
@@ -135,6 +154,5 @@ function initializeGame() {
 
   startTimer(); // Iniciar el temporizador
 }
-
-// Initialize the game when the DOM is fully loaded
+// Iniciar el juego al cargar la página
 document.addEventListener('DOMContentLoaded', initializeGame);
