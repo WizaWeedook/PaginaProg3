@@ -43,6 +43,8 @@ class GameScene extends Phaser.Scene {
         this.nave = this.physics.add.sprite(400, 500, 'nave');
         this.nave.setScale(0.2);
         this.nave.setCollideWorldBounds(true);
+        this.nave.setSize(850, 400);
+        this.nave.setOffset(-425, 50);
 
         // Crear taladro (punta)
         this.taladro = this.physics.add.sprite(this.nave.x, this.nave.y - 50, 'taladro');
@@ -60,6 +62,9 @@ class GameScene extends Phaser.Scene {
 
         // Colisión taladro-meteorito
         this.physics.add.overlap(this.taladro, this.meteoritos, this.explotarMeteorito, null, this);
+        
+        // Colisión nave-meteorito
+        this.physics.add.collider(this.nave, this.meteoritos, this.gameOver, null, this);
 
         // Timer para crear meteoritos
         this.time.addEvent({
@@ -98,6 +103,56 @@ class GameScene extends Phaser.Scene {
 
         // Destruir el meteorito
         meteorito.destroy();
+    }
+
+    gameOver(nave, meteorito) {
+        console.log('Colisión detectada entre nave y meteorito');
+        
+        // Crear efecto de explosión en la nave
+        const explosionNave = this.add.sprite(nave.x, nave.y, 'nave');
+        explosionNave.setScale(0.2);
+        explosionNave.setAlpha(0.8);
+        
+        // Animación de explosión de la nave
+        this.tweens.add({
+            targets: explosionNave,
+            scale: 0.4,
+            alpha: 0,
+            duration: 200,
+            onComplete: () => {
+                explosionNave.destroy();
+            }
+        });
+
+        // Crear efecto de explosión en el meteorito
+        const explosionMeteorito = this.add.sprite(meteorito.x, meteorito.y, 'meteorito');
+        explosionMeteorito.setScale(0.2);
+        explosionMeteorito.setAlpha(0.8);
+        
+        // Animación de explosión del meteorito
+        this.tweens.add({
+            targets: explosionMeteorito,
+            scale: 0.4,
+            alpha: 0,
+            duration: 200,
+            onComplete: () => {
+                explosionMeteorito.destroy();
+            }
+        });
+
+        // Destruir la nave, el taladro y el meteorito
+        this.nave.destroy();
+        this.taladro.destroy();
+        meteorito.destroy();
+
+        // Detener el juego
+        this.physics.pause();
+        
+        // Mostrar mensaje de Game Over
+        const gameOverText = this.add.text(400, 300, 'GAME OVER', {
+            fontSize: '64px',
+            fill: '#ff0000'
+        }).setOrigin(0.5);
     }
 
     update() {
