@@ -18,24 +18,39 @@ class GameScene extends Phaser.Scene {
 
     preload() {
         // Usar los assets locales
-        this.load.image('fondo', 'assets/fondo_espacial.gif'); // tu gif de fondo
+        this.load.on('loaderror', (file) => {
+            console.error('Error cargando:', file.src);
+        });
+
+        this.load.on('filecomplete', (key, type, data) => {
+            console.log('Archivo cargado exitosamente:', key);
+        });
+
+        this.load.image('fondo', 'assets/Fondo Espacial.gif');
         this.load.image('nave', 'assets/nave.png');
         this.load.image('taladro', 'assets/taladro.png');
         this.load.image('meteorito', 'assets/meteorito.png');
     }
 
     create() {
+        // Verificar si las texturas se cargaron
+        console.log('Texturas disponibles:', this.textures.getTextureKeys());
+        
         // Fondo espacial
         this.add.image(400, 300, 'fondo').setDepth(-1).setDisplaySize(800, 600);
 
         // Crear nave
         this.nave = this.physics.add.sprite(400, 500, 'nave');
+        this.nave.setScale(0.2);
         this.nave.setCollideWorldBounds(true);
 
         // Crear taladro (punta)
-        this.taladro = this.physics.add.sprite(this.nave.x, this.nave.y - 40, 'taladro');
-        this.taladro.setScale(0.5);
+        this.taladro = this.physics.add.sprite(this.nave.x, this.nave.y - 50, 'taladro');
+        this.taladro.setScale(1);
         this.taladro.body.allowGravity = false;
+        this.taladro.setCollideWorldBounds(true);
+        this.taladro.setSize(100, 100);
+        this.taladro.setOffset(-80, -50);
 
         // Grupo de meteoritos
         this.meteoritos = this.physics.add.group();
@@ -58,12 +73,30 @@ class GameScene extends Phaser.Scene {
     crearMeteorito() {
         const x = Phaser.Math.Between(50, 750);
         const meteorito = this.meteoritos.create(x, 0, 'meteorito');
+        meteorito.setScale(0.15);
         meteorito.setVelocityY(Phaser.Math.Between(100, 200));
-        meteorito.setScale(0.5);
-        meteorito.setCircle(32); // Ajusta según el sprite
+        meteorito.setSize(40, 40);
+        meteorito.setOffset(10, 10);
     }
 
     explotarMeteorito(taladro, meteorito) {
+        // Crear efecto de explosión
+        const explosion = this.add.sprite(meteorito.x, meteorito.y, 'meteorito');
+        explosion.setScale(0.2);
+        explosion.setAlpha(0.8);
+        
+        // Animación de explosión
+        this.tweens.add({
+            targets: explosion,
+            scale: 0.4,
+            alpha: 0,
+            duration: 200,
+            onComplete: () => {
+                explosion.destroy();
+            }
+        });
+
+        // Destruir el meteorito
         meteorito.destroy();
     }
 
@@ -83,9 +116,9 @@ class GameScene extends Phaser.Scene {
             this.nave.setVelocityY(speed);
         }
 
-        // Posicionar el taladro en la punta de la nave
+        // Posicionar el taladro en la parte superior de la nave
         this.taladro.x = this.nave.x;
-        this.taladro.y = this.nave.y - 40;
+        this.taladro.y = this.nave.y - 50;
     }
 }
 
@@ -100,10 +133,15 @@ const config = {
             debug: false
         }
     },
-    scene: [GameScene]
+    scene: [GameScene],
+    pixelArt: false,
+    roundPixels: true
 };
 
-const game = new Phaser.Game(config);
+// Asegurarse de que el juego se inicie después de que todo esté cargado
+window.onload = function() {
+    const game = new Phaser.Game(config);
+};
 </script>
 </body>
 </html>
