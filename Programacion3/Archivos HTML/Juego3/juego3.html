@@ -17,13 +17,17 @@ class GameScene extends Phaser.Scene {
     }
 
     preload() {
-        // Puedes reemplazar estos gráficos por imágenes propias
-        this.load.image('nave', 'https://labs.phaser.io/assets/sprites/space-baddie.png');
-        this.load.image('taladro', 'https://labs.phaser.io/assets/particles/yellow.png');
-        this.load.image('meteorito', 'https://labs.phaser.io/assets/sprites/asteroid.png');
+        // Usar los assets locales
+        this.load.image('fondo', 'assets/fondo_espacial.gif'); // tu gif de fondo
+        this.load.image('nave', 'assets/nave.png');
+        this.load.image('taladro', 'assets/taladro.png');
+        this.load.image('meteorito', 'assets/meteorito.png');
     }
 
     create() {
+        // Fondo espacial
+        this.add.image(400, 300, 'fondo').setDepth(-1).setDisplaySize(800, 600);
+
         // Crear nave
         this.nave = this.physics.add.sprite(400, 500, 'nave');
         this.nave.setCollideWorldBounds(true);
@@ -61,7 +65,6 @@ class GameScene extends Phaser.Scene {
 
     explotarMeteorito(taladro, meteorito) {
         meteorito.destroy();
-        
     }
 
     update() {
