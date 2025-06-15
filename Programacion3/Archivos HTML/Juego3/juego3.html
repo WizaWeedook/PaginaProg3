@@ -5,8 +5,23 @@
     <title>Taladro Espacial</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
     <style>
-        body { margin: 0; }
-        canvas { display: block; margin: 0 auto; }
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        canvas {
+            display: block;
+            margin: 0;
+            padding: 0;
+            width: 100% !important;
+            height: 100% !important;
+        }
     </style>
 </head>
 <body>
@@ -14,6 +29,10 @@
 class GameScene extends Phaser.Scene {
     constructor() {
         super({ key: 'GameScene' });
+        // Constantes
+        this.VELOCIDAD_NAVE = 400;
+        this.VIDAS_INICIALES = 3;
+        this.METEORITOS_PASAR_GAMEOVER = 5;
     }
 
     preload() {
@@ -33,18 +52,33 @@ class GameScene extends Phaser.Scene {
     }
 
     create() {
-        // Verificar si las texturas se cargaron
-        console.log('Texturas disponibles:', this.textures.getTextureKeys());
-        
-        // Fondo espacial
-        this.add.image(400, 300, 'fondo').setDepth(-1).setDisplaySize(800, 600);
+        // Fondo espacial adaptado al tamaño de la pantalla
+        this.fondo = this.add.image(this.scale.width / 2, this.scale.height / 2, 'fondo')
+            .setDepth(-1)
+            .setDisplaySize(this.scale.width, this.scale.height);
 
-        // Crear nave
-        this.nave = this.physics.add.sprite(400, 500, 'nave');
+        // Estadísticas
+        this.meteoritosDestruidos = 0;
+        this.vidas = this.VIDAS_INICIALES;
+        this.tiempoInicial = this.time.now;
+        this.meteoritosPasados = 0;
+        this.juegoTerminado = false;
+
+        // Texto de estadísticas
+        this.textoEstadisticas = this.add.text(20, 20, '', {
+            fontSize: '28px',
+            fill: '#fff',
+            fontFamily: 'Arial',
+            stroke: '#000',
+            strokeThickness: 4
+        }).setDepth(10);
+
+        // Crear nave en la parte inferior central
+        this.nave = this.physics.add.sprite(this.scale.width / 2, this.scale.height - 100, 'nave');
         this.nave.setScale(0.2);
         this.nave.setCollideWorldBounds(true);
-        this.nave.setSize(850, 400);
-        this.nave.setOffset(-425, 50);
+        this.nave.setSize(800, 400);
+        this.nave.setOffset(-280, 50);
 
         // Crear taladro (punta)
         this.taladro = this.physics.add.sprite(this.nave.x, this.nave.y - 50, 'taladro');
@@ -62,21 +96,23 @@ class GameScene extends Phaser.Scene {
 
         // Colisión taladro-meteorito
         this.physics.add.overlap(this.taladro, this.meteoritos, this.explotarMeteorito, null, this);
-        
         // Colisión nave-meteorito
-        this.physics.add.collider(this.nave, this.meteoritos, this.gameOver, null, this);
+        this.physics.add.collider(this.nave, this.meteoritos, this.colisionNave, null, this);
 
         // Timer para crear meteoritos
-        this.time.addEvent({
-            delay: 1000,
+        this.timerMeteoritos = this.time.addEvent({
+            delay: 2000,
             callback: this.crearMeteorito,
             callbackScope: this,
             loop: true
         });
+
+        // Redimensionar fondo y reposicionar nave/taladro al cambiar tamaño
+        this.scale.on('resize', this.redimensionar, this);
     }
 
     crearMeteorito() {
-        const x = Phaser.Math.Between(50, 750);
+        const x = Phaser.Math.Between(50, this.scale.width - 50);
         const meteorito = this.meteoritos.create(x, 0, 'meteorito');
         meteorito.setScale(0.15);
         meteorito.setVelocityY(Phaser.Math.Between(100, 200));
@@ -84,13 +120,28 @@ class GameScene extends Phaser.Scene {
         meteorito.setOffset(10, 10);
     }
 
+    redimensionar(gameSize) {
+        // Ajustar fondo
+        this.fondo.setDisplaySize(gameSize.width, gameSize.height);
+        this.fondo.setPosition(gameSize.width / 2, gameSize.height / 2);
+        // Reposicionar nave y taladro
+        this.nave.setPosition(gameSize.width / 2, gameSize.height - 100);
+        this.taladro.setPosition(this.nave.x, this.nave.y - 50);
+    }
+
+    actualizarEstadisticas() {
+        const tiempoJugado = ((this.time.now - this.tiempoInicial) / 1000).toFixed(1);
+        this.textoEstadisticas.setText(
+            `Meteoritos destruidos: ${this.meteoritosDestruidos}\nVidas: ${this.vidas}\nTiempo: ${tiempoJugado}s\nMeteoritos que pasaron: ${this.meteoritosPasados}`
+        );
+    }
+
     explotarMeteorito(taladro, meteorito) {
+        if (this.juegoTerminado) return;
         // Crear efecto de explosión
         const explosion = this.add.sprite(meteorito.x, meteorito.y, 'meteorito');
         explosion.setScale(0.2);
         explosion.setAlpha(0.8);
-        
-        // Animación de explosión
         this.tweens.add({
             targets: explosion,
             scale: 0.4,
@@ -100,20 +151,16 @@ class GameScene extends Phaser.Scene {
                 explosion.destroy();
             }
         });
-
-        // Destruir el meteorito
         meteorito.destroy();
+        this.meteoritosDestruidos++;
     }
 
-    gameOver(nave, meteorito) {
-        console.log('Colisión detectada entre nave y meteorito');
-        
-        // Crear efecto de explosión en la nave
+    colisionNave(nave, meteorito) {
+        if (this.juegoTerminado) return;
+        // Efecto de explosión en la nave y el meteorito
         const explosionNave = this.add.sprite(nave.x, nave.y, 'nave');
         explosionNave.setScale(0.2);
         explosionNave.setAlpha(0.8);
-        
-        // Animación de explosión de la nave
         this.tweens.add({
             targets: explosionNave,
             scale: 0.4,
@@ -123,13 +170,9 @@ class GameScene extends Phaser.Scene {
                 explosionNave.destroy();
             }
         });
-
-        // Crear efecto de explosión en el meteorito
         const explosionMeteorito = this.add.sprite(meteorito.x, meteorito.y, 'meteorito');
         explosionMeteorito.setScale(0.2);
         explosionMeteorito.setAlpha(0.8);
-        
-        // Animación de explosión del meteorito
         this.tweens.add({
             targets: explosionMeteorito,
             scale: 0.4,
@@ -139,48 +182,70 @@ class GameScene extends Phaser.Scene {
                 explosionMeteorito.destroy();
             }
         });
+        meteorito.destroy();
+        this.vidas--;
+        if (this.vidas <= 0) {
+            this.gameOver();
+        }
+    }
 
-        // Destruir la nave, el taladro y el meteorito
+    gameOver() {
+        if (this.juegoTerminado) return;
+        this.juegoTerminado = true;
         this.nave.destroy();
         this.taladro.destroy();
-        meteorito.destroy();
-
-        // Detener el juego
         this.physics.pause();
-        
-        // Mostrar mensaje de Game Over
-        const gameOverText = this.add.text(400, 300, 'GAME OVER', {
-            fontSize: '64px',
-            fill: '#ff0000'
-        }).setOrigin(0.5);
+        if (this.timerMeteoritos) this.timerMeteoritos.remove(false);
+        // Guardar estadísticas en localStorage
+        const tiempoJugado = ((this.time.now - this.tiempoInicial) / 1000).toFixed(1);
+        localStorage.setItem('estadisticas_juego3', JSON.stringify({
+            meteoritosDestruidos: this.meteoritosDestruidos,
+            vidas: this.vidas,
+            tiempo: tiempoJugado,
+            meteoritosPasados: this.meteoritosPasados
+        }));
+        // Redirigir a la pantalla de Game Over
+        window.location.href = 'gameover3.html';
     }
 
     update() {
+        if (this.juegoTerminado) return;
         // Movimiento de la nave
-        const speed = 250;
         this.nave.setVelocity(0);
-
         if (this.cursors.left.isDown) {
-            this.nave.setVelocityX(-speed);
+            this.nave.setVelocityX(-this.VELOCIDAD_NAVE);
         } else if (this.cursors.right.isDown) {
-            this.nave.setVelocityX(speed);
+            this.nave.setVelocityX(this.VELOCIDAD_NAVE);
         }
         if (this.cursors.up.isDown) {
-            this.nave.setVelocityY(-speed);
+            this.nave.setVelocityY(-this.VELOCIDAD_NAVE);
         } else if (this.cursors.down.isDown) {
-            this.nave.setVelocityY(speed);
+            this.nave.setVelocityY(this.VELOCIDAD_NAVE);
         }
-
         // Posicionar el taladro en la parte superior de la nave
         this.taladro.x = this.nave.x;
         this.taladro.y = this.nave.y - 50;
+
+        // Revisar meteoritos que salen por la parte inferior de la pantalla
+        this.meteoritos.getChildren().forEach((meteorito) => {
+            if (meteorito.active && meteorito.y > this.scale.height) {
+                meteorito.destroy();
+                this.meteoritosPasados++;
+                if (this.meteoritosPasados >= this.METEORITOS_PASAR_GAMEOVER) {
+                    this.gameOver();
+                }
+            }
+        });
+
+        // Actualizar estadísticas
+        this.actualizarEstadisticas();
     }
 }
 
 const config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: window.innerWidth,
+    height: window.innerHeight,
     backgroundColor: '#222',
     physics: {
         default: 'arcade',
@@ -190,12 +255,23 @@ const config = {
     },
     scene: [GameScene],
     pixelArt: false,
-    roundPixels: true
+    roundPixels: true,
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: window.innerWidth,
+        height: window.innerHeight
+    }
 };
 
 // Asegurarse de que el juego se inicie después de que todo esté cargado
 window.onload = function() {
     const game = new Phaser.Game(config);
+    
+    // Manejar el redimensionamiento de la ventana
+    window.addEventListener('resize', function() {
+        game.scale.resize(window.innerWidth, window.innerHeight);
+    });
 };
 </script>
 </body>

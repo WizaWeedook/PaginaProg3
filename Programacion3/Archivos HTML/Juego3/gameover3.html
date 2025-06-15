@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Game Over - Meteoritos</title>
+    <style>
+        body {
+            background: url('assets/Fondo Espacial.gif') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .gameover-box {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 0 30px #000a;
+            text-align: center;
+        }
+        h1 {
+            color: #ff4444;
+            margin-bottom: 20px;
+        }
+        .estadisticas {
+            font-size: 1.3em;
+            margin-bottom: 30px;
+        }
+        button {
+            font-size: 1.1em;
+            margin: 10px 20px;
+            padding: 12px 32px;
+            border: none;
+            border-radius: 8px;
+            background: #444;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="gameover-box">
+        <h1>GAME OVER</h1>
+        <div class="estadisticas" id="estadisticas"></div>
+        <button onclick="window.location.href='juego3.html'">Volver a jugar</button>
+        <button onclick="window.location.href='../index.html'">Volver al inicio</button>
+    </div>
+    <script>
+        const stats = JSON.parse(localStorage.getItem('estadisticas_juego3'));
+        if (stats) {
+            document.getElementById('estadisticas').innerHTML =
+                `<strong>Meteoritos destruidos:</strong> ${stats.meteoritosDestruidos}<br>` +
+                `<strong>Vidas restantes:</strong> ${stats.vidas}<br>` +
+                `<strong>Tiempo jugado:</strong> ${stats.tiempo}s<br>` +
+                `<strong>Meteoritos que pasaron:</strong> ${stats.meteoritosPasados}`;
+        } else {
+            document.getElementById('estadisticas').innerText = 'No hay estadísticas disponibles.';
+        }
+    </script>
+</body>
+</html> 

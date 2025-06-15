@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Menú Meteoritos</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        canvas {
+            display: block;
+            margin: 0;
+            padding: 0;
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+</head>
+<body>
+<script>
+class MenuScene extends Phaser.Scene {
+    constructor() {
+        super({ key: 'MenuScene' });
+    }
+
+    preload() {
+        this.load.image('fondo', 'assets/Fondo Espacial.gif');
+    }
+
+    create() {
+        // Fondo
+        this.add.image(this.scale.width / 2, this.scale.height / 2, 'fondo')
+            .setDisplaySize(this.scale.width, this.scale.height);
+
+        // Título
+        this.add.text(this.scale.width / 2, this.scale.height / 2 - 100, 'Meteoritos', {
+            fontSize: '64px',
+            fill: '#fff',
+            fontFamily: 'Arial',
+            stroke: '#000',
+            strokeThickness: 8
+        }).setOrigin(0.5);
+
+        // Botón Jugar
+        const jugarBtn = this.add.text(this.scale.width / 2, this.scale.height / 2 + 20, 'Jugar', {
+            fontSize: '40px',
+            fill: '#00ff00',
+            backgroundColor: '#222',
+            padding: { left: 30, right: 30, top: 10, bottom: 10 },
+            fontFamily: 'Arial',
+            borderRadius: 10
+        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+        jugarBtn.on('pointerdown', () => {
+            window.location.href = 'juego3.html';
+        });
+
+        // Botón Volver al inicio
+        const volverBtn = this.add.text(this.scale.width / 2, this.scale.height / 2 + 90, 'Volver al inicio', {
+            fontSize: '32px',
+            fill: '#ff0000',
+            backgroundColor: '#222',
+            padding: { left: 20, right: 20, top: 8, bottom: 8 },
+            fontFamily: 'Arial',
+            borderRadius: 10
+        }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+        volverBtn.on('pointerdown', () => {
+            window.location.href = '../index.html';
+        });
+
+        // Redimensionar elementos al cambiar tamaño
+        this.scale.on('resize', (gameSize) => {
+            this.children.getByName('fondo')?.setDisplaySize(gameSize.width, gameSize.height);
+            this.children.getByName('titulo')?.setPosition(gameSize.width / 2, gameSize.height / 2 - 100);
+            jugarBtn.setPosition(gameSize.width / 2, gameSize.height / 2 + 20);
+            volverBtn.setPosition(gameSize.width / 2, gameSize.height / 2 + 90);
+        });
+    }
+}
+
+const config = {
+    type: Phaser.AUTO,
+    width: window.innerWidth,
+    height: window.innerHeight,
+    backgroundColor: '#222',
+    scene: [MenuScene],
+    pixelArt: false,
+    roundPixels: true,
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: window.innerWidth,
+        height: window.innerHeight
+    }
+};
+
+window.onload = function() {
+    const game = new Phaser.Game(config);
+    window.addEventListener('resize', function() {
+        game.scale.resize(window.innerWidth, window.innerHeight);
+    });
+};
+</script>
+</body>
+</html>
