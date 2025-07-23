@@ -1,9 +1,11 @@
+<!-- Pantalla de Game Over para el juego de meteoritos -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Game Over - Meteoritos</title>
     <style>
+        /* Fondo animado y estilos generales */
         body {
             background: url('assets/Fondo Espacial.gif') no-repeat center center fixed;
             background-size: cover;
@@ -16,6 +18,7 @@
             height: 100vh;
             margin: 0;
         }
+        /* Caja central con transparencia para el mensaje de Game Over */
         .gameover-box {
             background: rgba(0, 0, 0, 0.7);
             border-radius: 20px;
@@ -31,6 +34,7 @@
             font-size: 1.3em;
             margin-bottom: 30px;
         }
+        /* Estilos de los botones */
         button {
             font-size: 1.1em;
             margin: 10px 20px;
@@ -50,19 +54,25 @@
 <body>
     <div class="gameover-box">
         <h1>GAME OVER</h1>
+        <!-- Aquí se mostrarán las estadísticas finales -->
         <div class="estadisticas" id="estadisticas"></div>
+        <!-- Botón para volver a jugar -->
         <button onclick="window.location.href='juego3.html'">Volver a jugar</button>
+        <!-- Botón para volver al menú principal -->
         <button onclick="window.location.href='../index.html'">Volver al inicio</button>
     </div>
     <script>
+        // Recuperar estadísticas guardadas en localStorage al terminar la partida
         const stats = JSON.parse(localStorage.getItem('estadisticas_juego3'));
         if (stats) {
+            // Mostrar estadísticas si existen
             document.getElementById('estadisticas').innerHTML =
                 `<strong>Meteoritos destruidos:</strong> ${stats.meteoritosDestruidos}<br>` +
                 `<strong>Vidas restantes:</strong> ${stats.vidas}<br>` +
                 `<strong>Tiempo jugado:</strong> ${stats.tiempo}s<br>` +
                 `<strong>Meteoritos que pasaron:</strong> ${stats.meteoritosPasados}`;
         } else {
+            // Mensaje alternativo si no hay estadísticas
             document.getElementById('estadisticas').innerText = 'No hay estadísticas disponibles.';
         }
     </script>

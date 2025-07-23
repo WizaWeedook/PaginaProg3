@@ -1,10 +1,13 @@
+<!-- Menú principal del juego de meteoritos -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Menú Meteoritos</title>
+    <!-- Se incluye la librería Phaser para crear el menú con gráficos y botones -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
     <style>
+        /* Elimina márgenes y hace que el canvas ocupe toda la pantalla */
         html, body {
             margin: 0;
             padding: 0;
@@ -26,21 +29,23 @@
 </head>
 <body>
 <script>
+// Definición de la escena del menú usando Phaser
 class MenuScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MenuScene' });
     }
 
     preload() {
+        // Carga la imagen de fondo para el menú
         this.load.image('fondo', 'assets/Fondo Espacial.gif');
     }
 
     create() {
-        // Fondo
+        // Agrega el fondo y lo ajusta al tamaño de la pantalla
         this.add.image(this.scale.width / 2, this.scale.height / 2, 'fondo')
             .setDisplaySize(this.scale.width, this.scale.height);
 
-        // Título
+        // Título del menú
         this.add.text(this.scale.width / 2, this.scale.height / 2 - 100, 'Meteoritos', {
             fontSize: '64px',
             fill: '#fff',
@@ -49,7 +54,7 @@ class MenuScene extends Phaser.Scene {
             strokeThickness: 8
         }).setOrigin(0.5);
 
-        // Botón Jugar
+        // Botón para empezar a jugar
         const jugarBtn = this.add.text(this.scale.width / 2, this.scale.height / 2 + 20, 'Jugar', {
             fontSize: '40px',
             fill: '#00ff00',
@@ -58,11 +63,12 @@ class MenuScene extends Phaser.Scene {
             fontFamily: 'Arial',
             borderRadius: 10
         }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+        // Al hacer clic en "Jugar", se abre el juego principal
         jugarBtn.on('pointerdown', () => {
             window.location.href = 'juego3.html';
         });
 
-        // Botón Volver al inicio
+        // Botón para volver al inicio
         const volverBtn = this.add.text(this.scale.width / 2, this.scale.height / 2 + 90, 'Volver al inicio', {
             fontSize: '32px',
             fill: '#ff0000',
@@ -71,11 +77,12 @@ class MenuScene extends Phaser.Scene {
             fontFamily: 'Arial',
             borderRadius: 10
         }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+        // Al hacer clic en "Volver al inicio", se regresa a la página principal
         volverBtn.on('pointerdown', () => {
             window.location.href = '../index.html';
         });
 
-        // Redimensionar elementos al cambiar tamaño
+        // Ajusta los elementos si la ventana cambia de tamaño
         this.scale.on('resize', (gameSize) => {
             this.children.getByName('fondo')?.setDisplaySize(gameSize.width, gameSize.height);
             this.children.getByName('titulo')?.setPosition(gameSize.width / 2, gameSize.height / 2 - 100);
@@ -85,6 +92,7 @@ class MenuScene extends Phaser.Scene {
     }
 }
 
+// Configuración de Phaser para el menú
 const config = {
     type: Phaser.AUTO,
     width: window.innerWidth,
@@ -101,8 +109,10 @@ const config = {
     }
 };
 
+// Inicializa el menú cuando la página termina de cargar
 window.onload = function() {
     const game = new Phaser.Game(config);
+    // Ajusta el tamaño del juego si la ventana cambia de tamaño
     window.addEventListener('resize', function() {
         game.scale.resize(window.innerWidth, window.innerHeight);
     });

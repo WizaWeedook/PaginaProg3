@@ -1,12 +1,16 @@
+<!-- Documento principal del juego: Mago, Caballero y Dragón -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Se enlaza el archivo de lógica del juego -->
     <script src="logica.js"></script>
+    <!-- Fuente personalizada -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <title>Mago, Dragon y Caballero</title>
     <style>
+        /* Estilos generales para el cuerpo y el fondo */
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f0f2f5;
@@ -19,6 +23,7 @@
             background-repeat: no-repeat;
             min-height: 100vh;
         }
+        /* Contenedor principal del juego */
         .container {
             max-width: 800px;
             margin: 0 auto;
@@ -27,6 +32,7 @@
             border-radius: 15px;
             box-shadow: 0 4px 6px rgba(248, 246, 246, 0.1);
         }
+        /* Opciones de juego (imágenes) */
         .opciones {
             display: flex;
             justify-content: center;
@@ -40,6 +46,7 @@
         .opcion:hover {
             transform: scale(1.1);
         }
+        /* Resultados de cada ronda */
         .resultados {
             display: flex;
             justify-content: space-around;
@@ -62,6 +69,7 @@
             object-fit: cover;
             border-radius: 10px;
         }
+        /* Botón de reinicio */
         .resultado-final button  {
             display: none;
             margin: 30px auto 0 auto;
@@ -84,12 +92,14 @@
 <body>
     <div class="container">
         <h1>Mago, Caballero y Dragon</h1>
+        <!-- Sección de opciones: el jugador elige haciendo clic en una imagen -->
         <div class="opciones">
             <img src="img/mago.png" class="opcion" onclick="jugar(0);">
             <img src="img/guerrero.png" class="opcion" onclick="jugar(1);">
             <img src="img/dragon.png" class="opcion" onclick="jugar(2);">
         </div>
         
+        <!-- Muestra las elecciones de jugador y enemigo -->
         <div class="resultados">
             <div>
                 <h2>Jugador:</h2>
@@ -101,15 +111,19 @@
             </div>
         </div>
         
+        <!-- Sección de resultados y controles finales -->
         <div class="resultado-final">
             <h2>Resultado:</h2>
             <h2 id="resultado"></h2>
             <div id="ronda">Ronda: 1 / 5</div>
             <div id="estadoRonda"></div>
             <div id="marcador">Jugador: 0 - Enemigo: 0</div>
+            <!-- Muestra la jugada de cada uno (puede ser redundante con la sección de arriba) -->
             <div>Tu jugada: <span id="jugador"></span></div>
             <div>Jugada enemigo: <span id="enemigo"></span></div>
+            <!-- Botón para reiniciar la partida -->
             <button id="reiniciar" onclick="reiniciarJuego()" style="display:none;">Reiniciar partida</button>
+            <!-- Botón para volver al menú principal -->
             <button id="menu-btn" onclick="window.location.href='../index.html'" style="display:none; margin-left:10px;">Volver al menú</button>
         </div>
     </div>
