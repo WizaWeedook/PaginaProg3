@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Game Over - Meteoritos</title>
+    <script src="../../libs/sqljs/sql-wasm.js"></script>
     <style>
         /* Fondo animado y estilos generales */
         body {
@@ -56,10 +57,14 @@
         <h1>GAME OVER</h1>
         <!-- Aquí se mostrarán las estadísticas finales -->
         <div class="estadisticas" id="estadisticas"></div>
+        <!-- Tabla de resultados -->
+        <div id="tabla-resultados" style="max-height:40vh; overflow:auto; margin-top:10px;"></div>
         <!-- Botón para volver a jugar -->
         <button onclick="window.location.href='juego3.html'">Volver a jugar</button>
         <!-- Botón para volver al menú principal -->
         <button onclick="window.location.href='../index.html'">Volver al inicio</button>
+        <!-- Botón para exportar resultados SQLite -->
+        <button onclick="exportarBD()">Exportar resultados</button>
     </div>
     <script>
         // Recuperar estadísticas guardadas en localStorage al terminar la partida
@@ -75,6 +80,83 @@
             // Mensaje alternativo si no hay estadísticas
             document.getElementById('estadisticas').innerText = 'No hay estadísticas disponibles.';
         }
+
+        // Reconstruir una instancia de la BD desde base64 (si existe)
+        function obtenerBDDesdeLocal() {
+            const base64 = localStorage.getItem('db_juego3');
+            if (!base64) return null;
+            try {
+                const binary = atob(base64);
+                const arr = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) {
+                    arr[i] = binary.charCodeAt(i);
+                }
+                return arr;
+            } catch (e) {
+                console.error('Error reconstruyendo BD desde base64:', e);
+                return null;
+            }
+        }
+
+        // Exportar la BD a un archivo .sqlite
+        function exportarBD() {
+            const dump = obtenerBDDesdeLocal();
+            if (!dump) {
+                alert('No hay datos de base de datos para exportar.');
+                return;
+            }
+            const blob = new Blob([dump], { type: 'application/octet-stream' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'taladro_espacial.sqlite';
+            a.click();
+        }
+
+        // Verificación en consola: intentar abrir la BD y listar partidas
+        (function verificarBD() {
+            const dump = obtenerBDDesdeLocal();
+            if (!dump) return;
+            initSqlJs({ locateFile: file => `../../libs/sqljs/${file}` }).then(SQL => {
+                try {
+                    const db = new SQL.Database(dump);
+                    const res = db.exec(`
+                        SELECT j.nombre, p.meteoritos_destruidos, p.vidas_restantes,
+                               p.tiempo_jugado, p.meteoritos_pasados, p.fecha
+                        FROM Partidas p
+                        JOIN Jugadores j ON j.id_jugador = p.id_jugador
+                        ORDER BY p.id_partida DESC
+                    `);
+                    console.log('Partidas en BD:', res);
+
+                    // Renderizar tabla visible
+                    const rows = res[0]?.values.map(v =>
+                        Object.fromEntries(res[0].columns.map((c,i)=>[c, v[i]]))
+                    ) ?? [];
+                    const container = document.getElementById('tabla-resultados');
+                    if (rows.length === 0) {
+                        container.textContent = 'No hay partidas registradas.';
+                    } else {
+                        const headers = Object.keys(rows[0]);
+                        const table = document.createElement('table');
+                        table.style.background = '#111';
+                        table.style.color = '#fff';
+                        table.style.borderCollapse = 'collapse';
+                        table.style.width = '100%';
+                        table.innerHTML = `
+                            <thead>
+                                <tr>${headers.map(h=>`<th style="border:1px solid #333;padding:6px;">${h}</th>`).join('')}</tr>
+                            </thead>
+                            <tbody>
+                                ${rows.map(r=>`<tr>${headers.map(h=>`<td style=\"border:1px solid #333;padding:6px;\">${r[h]}</td>`).join('')}</tr>`).join('')}
+                            </tbody>`;
+                        container.innerHTML = '';
+                        container.appendChild(table);
+                    }
+                } catch (e) {
+                    console.warn('No se pudo leer la BD reconstruida:', e);
+                }
+            }).catch(err => console.error('Error inicializando SQL.js en gameover:', err));
+        })();
     </script>
 </body>
 </html> 

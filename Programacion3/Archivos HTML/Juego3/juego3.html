@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Taladro Espacial</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
+    <script src="../../libs/sqljs/sql-wasm.js"></script>
     <style>
         html, body {
             margin: 0;
@@ -23,6 +24,63 @@
             height: 100% !important;
         }
     </style>
+    <script>
+    let db;
+
+    // Inicializar SQL.js y crear tablas al cargar la página
+    const sqlReady = initSqlJs({ locateFile: file => `../../libs/sqljs/${file}` }).then(SQL => {
+        db = new SQL.Database();
+        db.run(`
+            CREATE TABLE IF NOT EXISTS Jugadores (
+                id_jugador INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre TEXT NOT NULL UNIQUE,
+                fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE TABLE IF NOT EXISTS Partidas (
+                id_partida INTEGER PRIMARY KEY AUTOINCREMENT,
+                id_jugador INTEGER,
+                meteoritos_destruidos INTEGER,
+                vidas_restantes INTEGER,
+                tiempo_jugado REAL,
+                meteoritos_pasados INTEGER,
+                fecha DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+        console.log('SQL.js inicializado y tablas listas');
+    });
+
+    // Guardar partida en la BD y persistir un volcado en localStorage para exportar luego
+    function guardarPartida(nombre, stats) {
+        if (!db) return;
+        try {
+            db.run("INSERT INTO Jugadores (nombre) VALUES (?)", [nombre]);
+        } catch (e) {
+            // Si ya existe el jugador (UNIQUE), continuar
+        }
+        // Obtener id_jugador usando prepared statement (exec no admite parámetros)
+        let id_jugador = null;
+        const stmt = db.prepare("SELECT id_jugador FROM Jugadores WHERE nombre = ?");
+        try {
+            stmt.bind([nombre]);
+            if (stmt.step()) {
+                const row = stmt.get();
+                id_jugador = row[0];
+            }
+        } finally {
+            stmt.free();
+        }
+        if (id_jugador === null || id_jugador === undefined) return;
+        db.run(
+            `INSERT INTO Partidas (id_jugador, meteoritos_destruidos, vidas_restantes, tiempo_jugado, meteoritos_pasados)
+             VALUES (?, ?, ?, ?, ?)`,
+            [id_jugador, stats.meteoritosDestruidos, stats.vidas, stats.tiempo, stats.meteoritosPasados]
+        );
+        // Exportar la BD en memoria y guardarla en base64 para poder descargarla desde gameover3.html
+        const data = db.export();
+        const base64 = btoa(String.fromCharCode(...data));
+        localStorage.setItem('db_juego3', base64);
+    }
+    </script>
 </head>
 <body>
 <script>
@@ -198,12 +256,21 @@ class GameScene extends Phaser.Scene {
         if (this.timerMeteoritos) this.timerMeteoritos.remove(false);
         // Guardar estadísticas en localStorage
         const tiempoJugado = ((this.time.now - this.tiempoInicial) / 1000).toFixed(1);
-        localStorage.setItem('estadisticas_juego3', JSON.stringify({
+        const statsPartida = {
             meteoritosDestruidos: this.meteoritosDestruidos,
             vidas: this.vidas,
             tiempo: tiempoJugado,
             meteoritosPasados: this.meteoritosPasados
-        }));
+        };
+        localStorage.setItem('estadisticas_juego3', JSON.stringify(statsPartida));
+
+        // Insertar la partida en la base de datos en memoria
+        const nombre = (prompt('Ingresá tu nombre:', 'Invitado') || 'Invitado').trim() || 'Invitado';
+        try {
+            guardarPartida(nombre, statsPartida);
+        } catch (e) {
+            console.error('No se pudo guardar la partida en la BD:', e);
+        }
         // Redirigir a la pantalla de Game Over
         window.location.href = 'gameover3.html';
     }
@@ -266,11 +333,15 @@ const config = {
 
 // Asegurarse de que el juego se inicie después de que todo esté cargado
 window.onload = function() {
-    const game = new Phaser.Game(config);
-    
-    // Manejar el redimensionamiento de la ventana
-    window.addEventListener('resize', function() {
-        game.scale.resize(window.innerWidth, window.innerHeight);
+    sqlReady.then(() => {
+        const game = new Phaser.Game(config);
+        // Manejar el redimensionamiento de la ventana
+        window.addEventListener('resize', function() {
+            game.scale.resize(window.innerWidth, window.innerHeight);
+        });
+    }).catch(err => {
+        console.error('No se pudo inicializar SQL.js antes de iniciar el juego:', err);
+        const game = new Phaser.Game(config);
     });
 };
 </script>
